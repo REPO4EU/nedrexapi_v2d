@@ -278,6 +278,22 @@ def get_node_attribute_values(
         ),
         alias="node_id",
     ),
+    source_domain_ids: list[str] = _Query(
+        None,
+        description=(
+            "Source Domain IDs to collect attribute values for - edges. "
+            "Multiple source domain IDs can be specified (e.g., `source_domain_id=<id_1>&source_domain_id=<id_2>`)"
+        ),
+        alias="source_domain_id",
+    ),
+    target_domain_ids: list[str] = _Query(
+        None,
+        description=(
+            "Target Domain IDs to collect attribute values for - edges. "
+            "Multiple target domain IDs can be specified (e.g., `target_domain_id=<id_1>&target_domain_id=<id_2>`)"
+        ),
+        alias="target_domain_id",
+    ),
     offset: Optional[int] = _Query(None, description="Offset to use"),
     limit: Optional[int] = _Query(
         None, description=f"Limit number of queries returned (default & maximum is {config['api.pagination_max']:,})"
@@ -286,17 +302,30 @@ def get_node_attribute_values(
 ):
     # Singular is used for arguments because this makes sense to a user.
     # Aliasing to plural here as node_id and attribute are actually lists of 1+ strings.
-
-    if t not in NODE_COLLECTIONS:
+    
+    if (t not in NODE_COLLECTIONS) and (t not in EDGE_COLLECTIONS):
         raise _HTTPException(status_code=404, detail=f"Collection {t!r} is not in the database")
     if attributes is None:
         # get all attributes for the type
         attributes = list_attributes(t)
 
-    if node_ids is None:
-        query = {}
-    else:
-        query = {"primaryDomainId": {"$in": node_ids}}
+    query = {}
+
+    if t in NODE_COLLECTIONS:
+        if node_ids:
+            query["primaryDomainId"] = {"$in": node_ids}
+    elif t in EDGE_COLLECTIONS:
+        if source_domain_ids and target_domain_ids:
+            query = {
+                "$and": [
+                    {"sourceDomainId": {"$in": source_domain_ids}},
+                    {"targetDomainId": {"$in": target_domain_ids}}
+                ]
+            }
+        elif source_domain_ids:
+            query["sourceDomainId"] = {"$in": source_domain_ids}
+        elif target_domain_ids:
+            query["targetDomainId"] = {"$in": target_domain_ids}
 
     if limit is None:
         limit = config["api.pagination_max"]
@@ -308,11 +337,17 @@ def get_node_attribute_values(
         kwargs["skip"] = offset
     kwargs["limit"] = limit
 
-    results = [
-        {"primaryDomainId": i["primaryDomainId"], **{attr: i.get(attr) for attr in attributes}}
-        for i in MongoInstance.DB()[t].find(query, **kwargs)
-    ]
-
+    if t in NODE_COLLECTIONS:
+        results = [
+            {"primaryDomainId": i["primaryDomainId"], **{attr: i.get(attr) for attr in attributes}}
+            for i in MongoInstance.DB()[t].find(query, **kwargs)
+        ]
+    elif t in EDGE_COLLECTIONS:
+        results = [
+            {"sourceDomainId": i["sourceDomainId"], "targetDomainId": i["targetDomainId"], **{attr: i.get(attr) for attr in attributes}}
+            for i in MongoInstance.DB()[t].find(query, **kwargs)
+        ]
+        
     if format == "json":
         return results
     elif format in {"csv", "tsv"}:
