@@ -21,7 +21,9 @@ class PPIRequest(_BaseModel):
     reviewed_proteins: list[bool] = _Field([True,False], title="Reviewed proteins", description="Whether to filter by reviewed proteins")
     skip_proteins: int = _Field(0, title="Skip proteins", description="The number of proteins to skip")
     limit_proteins: int = _Field(250000, title="Limit proteins", description="The number of proteins to return")
-   
+    sources: list[str] = _Field([], title="Sources",description="The sources to filter the PPIs by; if the list is empty, all sources will be considered")
+    num_sources: int = _Field(1, title="Minimum Source Count", description="Minimum number of sources required in dataSources for a PPI")
+    methods_score_cutoff: float = _Field(0.0, title="Methods Score Cutoff", description="Minimum value for the Methods score")
 
     class Config:
         extra = "forbid"
@@ -60,6 +62,15 @@ def get_paginated_protein_protein_interactions(
         })
         query.update({"memberOne": {"$in": filtered_proteins}, "memberTwo": {"$in": filtered_proteins}})
 
+    if ppi_request.sources and len(ppi_request.sources)>0:
+        query["dataSources"] = {"$in": ppi_request.sources}
+        
+    if ppi_request.num_sources > 1:
+        query["$expr"] = {"$gte": [{"$size": "$dataSources"}, ppi_request.num_sources]}
+        
+    if ppi_request.methods_score_cutoff > 0:
+        query["methods_score"] = {"$gte": ppi_request.methods_score_cutoff}
+        
     coll_name = "protein_interacts_with_protein"
 
     return [
