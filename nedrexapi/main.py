@@ -25,6 +25,7 @@ from nedrexapi.routers import kpm as _kpm
 from nedrexapi.routers import must as _must
 from nedrexapi.routers import neo4j as _neo4j
 from nedrexapi.routers import ppi as _ppi
+from nedrexapi.routers import ddi as _ddi
 from nedrexapi.routers import relations as _relations
 from nedrexapi.routers import robust as _robust
 from nedrexapi.routers import static as _static
@@ -89,6 +90,7 @@ if config.get("api.base") is not None:
 app.include_router(_general.router, prefix=_get_prefix(app_base, "/"), tags=["General"])
 app.include_router(_disorder.router, prefix=_get_prefix(app_base, "/disorder"), tags=["Disorder"])
 app.include_router(_ppi.router, prefix=_get_prefix(app_base, "/"), tags=["PPI routes"])
+app.include_router(_ddi.router, prefix=_get_prefix(app_base, "/"), tags=["DDI routes"])
 app.include_router(_relations.router, prefix=_get_prefix(app_base, "/relations"), tags=["Relations"])
 app.include_router(_graph.router, prefix=_get_prefix(app_base, "/graph"), tags=["Graph"])
 app.include_router(_bicon.router, prefix=_get_prefix(app_base, "/bicon"), tags=["BiCoN"])

@@ -83,6 +83,7 @@ def list_node_collections(x_api_key: str = _API_KEY_HEADER_ARG):
                         "protein_has_go_annotation",
                         "protein_in_pathway",
                         "protein_interacts_with_protein",
+                        "drug_interacts_with_drug",
                     ]
                 }
             }
