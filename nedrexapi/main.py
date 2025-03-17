@@ -90,7 +90,7 @@ if config.get("api.base") is not None:
 app.include_router(_general.router, prefix=_get_prefix(app_base, "/"), tags=["General"])
 app.include_router(_disorder.router, prefix=_get_prefix(app_base, "/disorder"), tags=["Disorder"])
 app.include_router(_ppi.router, prefix=_get_prefix(app_base, "/"), tags=["PPI routes"])
-app.include_router(_ddi.router, prefix=_get_prefix(app_base, "/ddi"), tags=["DDI routes"])
+app.include_router(_ddi.router, prefix=_get_prefix(app_base, "/"), tags=["DDI routes"])
 app.include_router(_relations.router, prefix=_get_prefix(app_base, "/relations"), tags=["Relations"])
 app.include_router(_graph.router, prefix=_get_prefix(app_base, "/graph"), tags=["Graph"])
 app.include_router(_bicon.router, prefix=_get_prefix(app_base, "/bicon"), tags=["BiCoN"])
