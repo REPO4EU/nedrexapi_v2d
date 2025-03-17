@@ -25,7 +25,7 @@ from nedrexapi.routers import kpm as _kpm
 from nedrexapi.routers import must as _must
 from nedrexapi.routers import neo4j as _neo4j
 from nedrexapi.routers import ppi as _ppi
-from nedrexapi.routers import ddii as _ddi
+from nedrexapi.routers import ddi as _ddi
 from nedrexapi.routers import relations as _relations
 from nedrexapi.routers import robust as _robust
 from nedrexapi.routers import static as _static
