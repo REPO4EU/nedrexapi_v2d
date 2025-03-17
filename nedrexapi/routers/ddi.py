@@ -45,13 +45,16 @@ def get_paginated_drug_drug_interactions(
         raise _HTTPException(status_code=422, detail=f"Limit specified ({ddi_request.limit}) greater than maximum limit allowed")
     
     query = {}
-    if ddi_request.nodes:
+    if ddi_request.nodes and len(ddi_request.nodes)>0:
         query = {
             "$or": [
                 {"memberOne": {"$in": ddi_request.nodes}},
                 {"memberTwo": {"$in": ddi_request.nodes}}
             ]
         }
+    
+    if ddi_request.sources and len(ddi_request.sources)>0:
+        query["dataSources"] = {"$in": ddi_request.sources}
 
     coll_name = "drug_interacts_with_drug"
 
