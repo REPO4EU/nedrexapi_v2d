@@ -6,8 +6,8 @@ name: Docker
 # documentation.
 
 on:
-  schedule:
-    - cron: '44 3 * * *'
+#  schedule:
+#    - cron: '44 3 * * *'
   push:
     branches: [ "repo4eu_main", "repo4eu_dev" ]
     # Publish semver tags as releases.
@@ -39,6 +39,12 @@ jobs:
         with:
           submodules: 'recursive'
           token: ${{ secrets.GH_TOKEN }}
+      # prevent caching
+      - name: Force clean submodule update
+        run: |
+          git submodule sync --recursive
+          git submodule foreach --recursive git fetch --all
+          git submodule update --remote --recursive --force
           
       # prevent caching
       - name: Force clean submodule update
@@ -87,7 +93,8 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
+          #,linux/arm64
           cache-from: type=gha
           cache-to: type=gha, mode=max
 

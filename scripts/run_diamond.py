@@ -55,6 +55,7 @@ def run(network_file, seed_file, n, alpha, o):
         ]
     )
 
+    print(f"docker run -v {volumes} djskelton/diamond:2437974 {command} ")
     client.containers.run("djskelton/diamond:2437974", command=command, volumes=volumes, auto_remove=True)
 
 

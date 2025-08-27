@@ -1,3 +1,4 @@
+import logging
 from uuid import uuid4 as _uuid4
 
 from fastapi import APIRouter as _APIRouter
@@ -87,11 +88,11 @@ class BuildRequest(_BaseModel):
         title="Split drugs into subtypes",
         description="Replaces type on Drugs with BiotechDrug or SmallMoleculeDrug as appropriate. Default: `False`",
     )
-    reviewed_proteins: list[str] = _Field(
+    reviewed_proteins: list[bool] = _Field(
         None,
         title="Filter for reviewed/unreviewed proteins",
         description="Filter for protein database: SwissProt [True] or Trembl [False]. "
-                    "Default: ['True', 'False']",
+                    "Default: [true, false]",
     )
 
     class Config:
@@ -147,6 +148,7 @@ def graph_builder(
         "withdrawn",
     ]
     valid_ppi_evidence = ["exp", "ortho", "pred"]
+    logging.info(build_request.reviewed_proteins)
 
     if build_request.nodes is None:
         build_request.nodes = DEFAULT_NODE_COLLECTIONS
@@ -172,8 +174,8 @@ def graph_builder(
     check_values(build_request.drug_groups, valid_drug_groups, "drug_groups")
 
     if build_request.reviewed_proteins is None:
-        build_request.reviewed_proteins = ["True", "False"]
-    check_values(build_request.reviewed_proteins, ["True", "False"], "reviewed_proteins")
+        build_request.reviewed_proteins = [True, False]
+    check_values(build_request.reviewed_proteins, [True, False], "reviewed_proteins")
 
     if build_request.include_omim is None:
         build_request.include_omim = True
@@ -227,7 +229,7 @@ def graph_builder(
                             "gene_associated_with_disorder",
                             "is_isoform_of",
                             "molecule_similarity_molecule",
-                            "protein_encoded_by",
+                            "protein_encoded_by_gene",
                             "protein_in_pathway",
                             "protein_interacts_with_protein",
                         ],
@@ -235,7 +237,7 @@ def graph_builder(
                         "ppi_self_loops": False,
                         "taxid": [9606],
                         "drug_groups": ["approved"],
-                        "reviewed_proteins": ['True', 'False'],
+                        "reviewed_proteins": [True, False],
                         "status": "completed",
                         "uid": "d961c377-cbb3-417f-a4b0-cc1996ce6f51",
                     }

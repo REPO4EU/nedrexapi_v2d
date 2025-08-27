@@ -68,6 +68,17 @@ scripts = "/app/nedrexapi/scripts"
 [tools]
 bicon_python = "/opt/conda/envs/bicon/bin/python"
 
+[embeddings]
+server_base="https://llm.cosy.bio/v1"
+model="snowflake-arctic-embed2:latest"
+path="embeddings"
+user="None"
+pass="none"
+
+[chat]
+server_base="https://llm.cosy.bio"
+model="phi4:latest"
+
 
 [db]
 version = "open"

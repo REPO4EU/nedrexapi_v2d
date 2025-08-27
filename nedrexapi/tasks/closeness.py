@@ -32,6 +32,7 @@ def run_closeness_wrapper(uid: str):
 
 def run_closeness(uid):
     ranking_file = f"{config['api.mode']}/PPDr-for-ranking.graphml"
+    ranking_file_internal = os.path.join(_STATIC_DIR_INTERNAL, ranking_file)
     if not os.path.exists(os.path.join(_STATIC_DIR_INTERNAL, ranking_file)):
         generate_ranking_static_files()
 
@@ -114,7 +115,7 @@ def run_closeness(uid):
     drug_ids = {i["drug_name"] for i in results["drugs"]}
     seeds = {f"uniprot.{i}" for i in details["seed_proteins"]}
 
-    g = nx.read_graphml(ranking_file)
+    g = nx.read_graphml(ranking_file_internal)
     for edge in product(drug_ids, seeds):
         if g.has_edge(*edge):
             results["edges"].append(list(edge))

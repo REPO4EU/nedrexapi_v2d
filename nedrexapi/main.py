@@ -31,6 +31,8 @@ from nedrexapi.routers import static as _static
 from nedrexapi.routers import trustrank as _trustrank
 from nedrexapi.routers import validation as _validation
 from nedrexapi.routers import variant as _variant
+from nedrexapi.routers import embeddings as _embeddings
+from nedrexapi.routers import chat as _chat
 
 base = "/"
 if config.get("api.base") is not None:
@@ -106,3 +108,5 @@ app.include_router(_variant.router, prefix=_get_prefix(app_base, "/variants"), t
 app.include_router(_neo4j.router, prefix=_get_prefix(app_base, "/neo4j"), tags=["Neo4j"])
 app.include_router(_comorbiditome.router, prefix=_get_prefix(app_base, "/comorbiditome"),
                    tags=["Comorbiditome & ICD10 Mapping"])
+app.include_router(_embeddings.router, prefix=_get_prefix(app_base, "/embeddings"), tags=["Embeddings"])
+app.include_router(_chat.router, prefix=_get_prefix(app_base, "/chat"), tags=["Chat"])
