@@ -23,7 +23,7 @@ class PPIRequest(_BaseModel):
     limit_proteins: int = _Field(250000, title="Limit proteins", description="The number of proteins to return")
     sources: list[str] = _Field([], title="Sources",description="The sources to filter the PPIs by; if the list is empty, all sources will be considered")
     num_sources: int = _Field(1, title="Minimum Source Count", description="Minimum number of sources required in dataSources for a PPI")
-    methods_score_cutoff: float = _Field(0.0, title="Methods Score Cutoff", description="Minimum value for the Methods score")
+    hippie_methods_score_cutoff: float = _Field(0.0, title="Hippie Methods Score Cutoff", description="Minimum value for the Hippie Methods score")
 
     class Config:
         extra = "forbid"
@@ -68,8 +68,8 @@ def get_paginated_protein_protein_interactions(
     if ppi_request.num_sources > 1:
         query["$expr"] = {"$gte": [{"$size": "$dataSources"}, ppi_request.num_sources]}
         
-    if ppi_request.methods_score_cutoff > 0:
-        query["methods_score"] = {"$gte": ppi_request.methods_score_cutoff}
+    if ppi_request.hippie_methods_score_cutoff > 0:
+        query["hippie_methods_score"] = {"$gte": ppi_request.hippie_methods_score_cutoff}
         
     coll_name = "protein_interacts_with_protein"
 

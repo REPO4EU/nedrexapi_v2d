@@ -1,26 +1,6 @@
-[api]
-mode="open"
-status="live"
-port=7123
-host="127.0.0.1"
-base="/open"
-
-rate_limiting_enabled = false
-rate_limit = "1/second"
-require_api_keys = false
-pagination_max = 10000
-
-redis_port = 5379
-redis_port_internal = 6379
-redis_host="open-nedrex-redis"
-redis_nedrex_db = 1
-redis_rate_limit_db = 2
-redis_queue_db = 3
-
-mongo_port=26018
-mongo_port_internal=27017
-mongo_db = "nedrexapi"
-network = "nedrexdb_default"
+version_type = "open"
+static_outside = "../nedrex_files/nedrex_api/static" # your path
+data_outside = "../nedrex_files/nedrex_api/data" # your path
 
 node_collections = [
     "disorder",
@@ -34,7 +14,7 @@ node_collections = [
     "tissue",
     "side_effect",
     "signature",
-    ]
+]
 
 edge_collections = [
     "disorder_has_phenotype",
@@ -58,32 +38,24 @@ edge_collections = [
     "variant_associated_with_disorder",
 ]
 
-[api.directories]
-static = "/data/nedrex_files/nedrex_api/static"
-static_outside = "/home/andim/projects/nedrex/nedrexdb_v2d/nedrex_files/nedrex_api/static"
-data = "/data/nedrex_files/nedrex_api/data"
-data_outside = "/home/andim/projects/nedrex/nedrexdb_v2d/nedrex_files/nedrex_api/data"
-scripts = "/app/nedrexapi/scripts"
-
 [tools]
 bicon_python = "/opt/conda/envs/bicon/bin/python"
 
 [embeddings]
-server_base="https://llm.cosy.bio/v1"
-model="snowflake-arctic-embed2:latest"
+server_base="*****"
+model="granite-embedding:latest"
+embedding_length=384
 path="embeddings"
-user="None"
-pass="none"
+api_key="sk-****************************"
 
 [chat]
-server_base="https://llm.cosy.bio"
-model="phi4:latest"
-
+server_base="None"
+model="None"
 
 [db]
 version = "open"
-neo4j_image = "neo4j:3.5.34"
-mongo_image = "mongo:4.4.10"
+neo4j_image = "ghcr.io/repotrial/nedrexdb_v2d-neo4j:dev"
+mongo_image = "mongo:5.0.27"
 mongo_express_image = "mongo-express:0.54.0"
 mongo_db = "nedrex"
 root_directory = "/data/nedrex_files/nedrex_data"
@@ -119,85 +91,157 @@ express_container_name = "open_nedrex_live_express"
 
 [sources]
 directory = "downloads"
+default_version = "2.2.0"
 
 [sources.biogrid]
 [sources.biogrid.human_data]
 filename = "homo_sapiens.tab3"
 
 [sources.bioontology]
+version = "2022AB"
+
 [sources.bioontology.meddra_mappings]
 filename = "meddra.json"
 
 [sources.chembl]
+version_url = "https://ftp.ebi.ac.uk/pub/databases/chembl/ChEMBLdb/latest/"
+version_pattern = '''href="chembl_\d+_sqlite\.tar\.gz"'''
+
 [sources.chembl.sqlite]
-url = "https://ftp.ebi.ac.uk/pub/databases/chembl/ChEMBLdb/latest/chembl_34_sqlite.tar.gz"
+url = "https://ftp.ebi.ac.uk/pub/databases/chembl/ChEMBLdb/latest/chembl_{}_sqlite.tar.gz"
 
 [sources.chembl.unichem]
-url = "https://ftp.ebi.ac.uk/pub/databases/chembl/UniChem/data/wholeSourceMapping/src_id1/src1src2.txt.gz"
+url = "ftp://ftp.ebi.ac.uk/pub/databases/chembl/UniChem/data/wholeSourceMapping/src_id1/src1src2.txt.gz"
 
 [sources.clinvar]
+version_url = "https://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh38/"
+version_pattern = '''href="clinvar_\d+\.vcf\.error\.txt"'''
+
 [sources.clinvar.human_data]
 url = "https://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh38/clinvar.vcf.gz"
 
 [sources.clinvar.human_data_xml]
 url = "https://ftp.ncbi.nlm.nih.gov/pub/clinvar/xml/ClinVarVCVRelease_00-latest.xml.gz"
 
+[sources.cosmic.census]
+filename = "CosmicMutantExportCensus.tsv.gz"
+
 [sources.ctd]
+version_url = "https://ctdbase.org/reports/"
+version_pattern = '''>CTD_chemicals_diseases\.tsv\.gz</a></td><td align="right">[\d-]+'''
+
 [sources.ctd.chemical_disease_relationships]
-url = "https://ctdbase.org/reports/CTD_chemicals_diseases.tsv.gz"
+url = "http://ctdbase.org/reports/CTD_chemicals_diseases.tsv.gz"
 
 [sources.disgenet]
+version = "24.1"
+
 [sources.disgenet.gene_disease_associations]
 url = "https://www.disgenet.org/static/disgenet_ap1/files/downloads/curated_gene_disease_associations.tsv.gz"
 
 [sources.drugbank]
+version = "5.1.10"
+
+[sources.drugbank.all]
+filename = "full database.xml"
+
 [sources.drugbank.open]
 filename = "all_drugbank_vocabulary.zip"
 
 [sources.drug_central]
+version = "2023-01-11"
+
 [sources.drug_central.postgres_dump]
 url = "https://unmtid-shinyapps.net/download/drugcentral.dump.11012023.sql.gz"
 filename = "drug_central.sql.gz"
 
+
 [sources.go]
+version_url = "https://current.geneontology.org/release_stats/go-stats-summary.json"
+version_pattern = '''"release_date": "[\d-]+'''
+
 [sources.go.go_core_owl]
 url = "http://purl.obolibrary.org/obo/go.owl"
 
 [sources.go.go_annotations]
 url = "http://geneontology.org/gene-associations/goa_human.gaf.gz"
 
+[sources.hippie.perplexity_scores]
+filename="hippie_perplexity_technique_scores.tsv"
+
 [sources.hpa]
+version_url = "https://www.proteinatlas.org/about/download"
+version_pattern = '''data available in the Human Protein Atlas version \d+\.\d+'''
+version_mode = "serial"
+
 [sources.hpa.all]
 url = "https://www.proteinatlas.org/download/proteinatlas.xml.gz"
 
 [sources.hpo]
+version_url = "https://github.com/obophenotype/human-phenotype-ontology/releases/"
+version_pattern = '''href="/obophenotype/human-phenotype-ontology/releases/tag/v[\d-]+'''
+
 [sources.hpo.obo]
 url = "http://purl.obolibrary.org/obo/hp.obo"
 
 [sources.hpo.annotations]
 url = "http://purl.obolibrary.org/obo/hp/hpoa/phenotype.hpoa"
 
+
 [sources.iid]
+version_url = "http://iid.ophid.utoronto.ca/static/Search_By_Proteins.css"
+version_pattern = '''content: "version [\d-]+'''
+
 [sources.iid.human]
 url = "http://iid.ophid.utoronto.ca/static/download/human_annotated_PPIs.txt.gz"
 
+
 [sources.intact]
+version_url = "https://ftp.ebi.ac.uk/pub/databases/intact/current/psimitab/"
+version_pattern = '''>intact\.zip</a></td><td align="right">[\d-]+'''
+
 [sources.intact.psimitab]
-url = "http://ftp.ebi.ac.uk/pub/databases/intact/current/psimitab/intact.zip"
+url = "https://ftp.ebi.ac.uk/pub/databases/intact/current/psimitab/intact.zip"
+
 
 [sources.mondo]
+version_url = "https://github.com/monarch-initiative/mondo/tags"
+version_pattern = '''/monarch-initiative/mondo/releases/tag/v[\d-]+'''
+
 [sources.mondo.json]
 url = "http://purl.obolibrary.org/obo/mondo.json"
 
+
 [sources.ncbi]
+version_url = "https://ftp.ncbi.nih.gov/gene/DATA/GENE_INFO/Mammalia/"
+version_pattern = '''>Homo_sapiens\.gene_info\.gz</a>      [\d-]+'''
+
 [sources.ncbi.gene_info]
 url = "https://ftp.ncbi.nih.gov/gene/DATA/GENE_INFO/Mammalia/Homo_sapiens.gene_info.gz"
 
+
+[sources.ncg]
+[sources.ncg.annotation]
+url = "http://network-cancer-genes.org/download.php"
+filename = "NCG_cancerdrivers_systemslevelproperties.tsv"
+[sources.ncg.mapping]
+filename = "ncg2mondo.json"
+
+[sources.omim]
+[sources.omim.genemap2]
+url = "https://data.omim.org/downloads/DIcI6kd8S96Xx9TDthBjCw/genemap2.txt"
+
+
 [sources.sider]
+version = "4.1"
+
 [sources.sider.frequency_data]
 url = "http://sideeffects.embl.de/media/download/meddra_freq.tsv.gz"
 
+
 [sources.repotrial]
+version = "1.0.0"
+
 [sources.repotrial.mappings]
 filename = "repotrial_mappings.tsv"
 
@@ -205,18 +249,32 @@ filename = "repotrial_mappings.tsv"
 filename = "matching_icd10_cmwho.json"
 
 [sources.unichem]
+version_url = "http://ftp.ebi.ac.uk/pub/databases/chembl/UniChem/data/wholeSourceMapping/src_id2/"
+version_pattern = '''>src2src22\.txt\.gz</a></td><td align="right">[\d-]+'''
+skip_digits = 3
+
 [sources.unichem.pubchem_drugbank_map]
-url = "http://ftp.ebi.ac.uk/pub/databases/chembl/UniChem/data/wholeSourceMapping/src_id2/src2src22.txt.gz"
+url = "ftp://ftp.ebi.ac.uk/pub/databases/chembl/UniChem/data/wholeSourceMapping/src_id2/src2src22.txt.gz"
 
 [sources.uberon]
+version = "2022-04-05"
+
 [sources.uberon.ext]
 url = "https://github.com/obophenotype/uberon/releases/download/v2022-04-05/ext.json"
 
 [sources.reactome]
+version_url = "https://reactome.org/download/current/"
+version_pattern = '''>UniProt2Reactome_All_Levels\.txt</a></td><td align="right">[\d-]+'''
+skip_digits = 1
+
 [sources.reactome.uniprot_annotations]
 url = "https://reactome.org/download/current/UniProt2Reactome_PE_All_Levels.txt"
 
+
 [sources.uniprot]
+version_url = "https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions"
+version_pattern = '''>uniprot_sprot_human\.dat\.gz</a></td><td align="right">[\d-]+'''
+
 [sources.uniprot.swissprot]
 url = "https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/taxonomic_divisions/uniprot_sprot_human.dat.gz"
 

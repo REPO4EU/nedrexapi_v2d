@@ -33,6 +33,7 @@ from nedrexapi.routers import validation as _validation
 from nedrexapi.routers import variant as _variant
 from nedrexapi.routers import embeddings as _embeddings
 from nedrexapi.routers import chat as _chat
+from nedrexapi.routers import translate as _translator
 
 base = "/"
 if config.get("api.base") is not None:
@@ -110,3 +111,4 @@ app.include_router(_comorbiditome.router, prefix=_get_prefix(app_base, "/comorbi
                    tags=["Comorbiditome & ICD10 Mapping"])
 app.include_router(_embeddings.router, prefix=_get_prefix(app_base, "/embeddings"), tags=["Embeddings"])
 app.include_router(_chat.router, prefix=_get_prefix(app_base, "/chat"), tags=["Chat"])
+app.include_router(_translator.router, prefix=_get_prefix(app_base, "/translate"), tags=["Translate"])

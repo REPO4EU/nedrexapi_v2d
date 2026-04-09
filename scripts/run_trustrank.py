@@ -60,4 +60,7 @@ command = " ".join(
         f"{'Y' if args.only_approved_drugs else 'N'}",
     ]
 )
+print("docker run djskelton/centralities:latest")
+print(f"volumes: {volumes}")
+print(f"command: {command}")
 client.containers.run("djskelton/centralities:latest", command=command, volumes=volumes, auto_remove=True)
